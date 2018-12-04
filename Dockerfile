@@ -5,6 +5,8 @@ MAINTAINER Marco Venezia <marco.venezia@skytv.it>
 RUN apt-get update
 RUN apt-get -y upgrade
 
+RUN apt-get -y install git
+
 # Install Apache2 / PHP 5.6 & Co.
 RUN apt-get -y install apache2 php5 libapache2-mod-php5 php5-dev php-pear php5-curl php5-ldap curl libaio1
 
@@ -27,6 +29,11 @@ RUN echo "extension=oci8.so" > /etc/php5/apache2/conf.d/30-oci8.ini
 
 # Enable Apache2 modules
 RUN a2enmod rewrite
+
+
+RUN cd /var/www/html
+RUN git clone HTTPS_REPOSITORY
+
 
 # Set up the Apache2 environment variables
 ENV APACHE_RUN_USER www-data
