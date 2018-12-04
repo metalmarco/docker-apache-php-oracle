@@ -36,7 +36,7 @@ ARG GIT_USERNAME
 ARG GIT_PASSWORD
 ARG GIT_SOURCE_REPO
 RUN cd /var/www/html
-RUN git clone https://$GIT_USERNAME:$GIT_PASSWORD@$GIT_SOURCE_REPO
+RUN [ -z "$GIT_USERNAME" ] || git clone https://$GIT_USERNAME:$GIT_PASSWORD@$GIT_SOURCE_REPO
 
 
 # Set up the Apache2 environment variables
