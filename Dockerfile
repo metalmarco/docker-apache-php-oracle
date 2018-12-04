@@ -31,8 +31,12 @@ RUN echo "extension=oci8.so" > /etc/php5/apache2/conf.d/30-oci8.ini
 RUN a2enmod rewrite
 
 
+# Source installation
+ARG GIT_USERNAME
+ARG GIT_PASSWORD
+ARG GIT_SOURCE_REPO
 RUN cd /var/www/html
-RUN git clone HTTPS_REPOSITORY
+RUN git clone https://$GIT_USERNAME:$GIT_PASSWORD@$GIT_SOURCE_REPO
 
 
 # Set up the Apache2 environment variables
