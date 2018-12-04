@@ -24,13 +24,15 @@ RUN docker-php-ext-install intl pdo_mysql mbstring sockets soap calendar ldap \
 ADD instantclient-basic-linux.x64-12.1.0.2.0.zip /tmp/
 ADD instantclient-sdk-linux.x64-12.1.0.2.0.zip /tmp/
 
+RUN ln -s /usr/lib64/libldap.so /usr/lib/libldap.so
+RUN ln -s /usr/lib64/libldap_r.so /usr/lib/libldap_r.so
+
 RUN unzip /tmp/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /usr/local/ \
     && unzip /tmp/instantclient-sdk-linux.x64-1libldap2-dev2.1.0.2.0.zip -d /usr/local/ \
     && ln -s /usr/local/instantclient_12_1 /usr/local/instantclient \
     && ln -s /usr/local/instantclient/libclntsh.so.12.1 /usr/local/instantclient/libclntsh.so \
     && docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient \
     && docker-php-ext-install oci8
-    && docker-php-ext-install ldap
 
 #ADD php.ini $PHP_INI_DIR/conf.d/php.ini
 #ADD website.conf /etc/apache2/sites-available/website.conf
