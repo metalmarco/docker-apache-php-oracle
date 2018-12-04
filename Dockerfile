@@ -1,6 +1,6 @@
 FROM php:5.4-apache
-
 RUN apt-get update && apt-get install -y \
+        libldb-dev \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
