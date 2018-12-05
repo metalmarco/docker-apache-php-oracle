@@ -5,10 +5,8 @@ MAINTAINER Marco Venezia <marco.venezia@skytv.it>
 RUN apt-get update
 RUN apt-get -y upgrade
 
-RUN apt-get -y install git
-
-# Install Apache2 / PHP 5.6 & Co.
-RUN apt-get -y install apache2 php5 libapache2-mod-php5 php5-dev php-pear php5-curl php5-ldap curl libaio1
+# Install packages
+RUN apt-get -y install apache2 php5 libapache2-mod-php5 php5-dev php-pear php5-curl php5-ldap curl libaio1 rsyslog git
 
 # Install the Oracle Instant Client
 ADD oracle/oracle-instantclient12.1-basic_12.1.0.2.0-2_amd64.deb /tmp
@@ -30,19 +28,13 @@ RUN echo "extension=oci8.so" > /etc/php5/apache2/conf.d/30-oci8.ini
 # Enable Apache2 modules
 RUN a2enmod rewrite
 
+# Start syslog
+RUN rsyslogd
 
 # Source installation
-#ARG GIT_USERNAME
-#ARG GIT_PASSWORD
-#ARG GIT_SOURCE_REPO
+ARG GIT_SOURCE_REPO
 
-#ENV GIT_USERNAME=''
-#ENV GIT_PASSWORD=''
-#ENV GIT_SOURCE_REPO=''
-
-RUN cd /var/www/html
-RUN [ -z "$GIT_USERNAME" ] || git clone https://$GIT_USERNAME:$GIT_PASSWORD@$GIT_SOURCE_REPO
-
+RUN cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || git clone $GIT_SOURCE_REPO
 
 # Set up the Apache2 environment variables
 ENV APACHE_RUN_USER www-data
