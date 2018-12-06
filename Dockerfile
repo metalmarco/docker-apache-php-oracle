@@ -34,7 +34,6 @@ RUN rsyslogd
 # Source installation
 ARG GIT_SOURCE_REPO
 
-RUN cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || git clone $GIT_SOURCE_REPO
 
 # Set up the Apache2 environment variables
 ENV APACHE_RUN_USER www-data
@@ -44,6 +43,9 @@ ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
 
 EXPOSE 80
+
+#Update Source
+ENTRYPOINT cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || git clone $GIT_SOURCE_REPO
 
 # Run Apache2 in Foreground
 CMD /usr/sbin/apache2 -D FOREGROUND
