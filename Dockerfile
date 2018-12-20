@@ -1,51 +1,89 @@
-FROM debian:jessie
+# =============================================================================
+# Base Image
+#
+# CentOS-7, Apache 2.4, PHP 7.2
+#
+# =============================================================================
+FROM centos:centos7
+LABEL maintainer="Marco Venezia <marco.venezia@skytv.it>"
 
-MAINTAINER Marco Venezia <marco.venezia@skytv.it>
+RUN yum -y update && \
+    yum -y install \
+        epel-release \
+        httpd \
+        unzip
 
-RUN apt-get update
-RUN apt-get -y upgrade
+# -----------------------------------------------------------------------------
+# Install Oracle drivers
+#
+# Oracle clients need to be downloaded in oracle path
+# -----------------------------------------------------------------------------
+ADD oracle/instantclient-basiclite-linux.x64-18.3.0.0.0dbru.zip /tmp/
+RUN mkdir -p /usr/lib/oracle/18.3/client64/lib/ && \
+    unzip -q /tmp/instantclient-basiclite-linux.x64-18.3.0.0.0dbru.zip -d /tmp && \
+    mv /tmp/instantclient_18_3/* /usr/lib/oracle/18.3/client64/lib/ && \
+    rm /tmp/instantclient-basiclite-linux.x64-18.3.0.0.0dbru.zip && \
+    echo "/usr/lib/oracle/18.3/client64/lib" > /etc/ld.so.conf.d/oracle.conf && \
+    ldconfig 
 
-# Install packages
-RUN apt-get -y install apache2 php5 libapache2-mod-php5 php5-dev php-pear php5-curl php5-ldap curl libaio1 rsyslog git
+# -----------------------------------------------------------------------------
+# Install SQL Server drivers
+# -----------------------------------------------------------------------------
+ADD https://packages.microsoft.com/config/rhel/7/prod.repo /etc/yum.repos.d/mssql-release.repo
+RUN ACCEPT_EULA=Y yum install -y msodbcsql
 
-# Install the Oracle Instant Client
-ADD oracle/oracle-instantclient12.1-basic_12.1.0.2.0-2_amd64.deb /tmp
-ADD oracle/oracle-instantclient12.1-devel_12.1.0.2.0-2_amd64.deb /tmp
-ADD oracle/oracle-instantclient12.1-sqlplus_12.1.0.2.0-2_amd64.deb /tmp
-RUN dpkg -i /tmp/oracle-instantclient12.1-basic_12.1.0.2.0-2_amd64.deb
-RUN dpkg -i /tmp/oracle-instantclient12.1-devel_12.1.0.2.0-2_amd64.deb
-RUN dpkg -i /tmp/oracle-instantclient12.1-sqlplus_12.1.0.2.0-2_amd64.deb
-RUN rm -rf /tmp/oracle-instantclient12.1-*.deb
+# -----------------------------------------------------------------------------
+# Apache 2.4 + (PHP 7.2 from Remi)
+# -----------------------------------------------------------------------------
+RUN yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm && \
+    yum-config-manager --enable remi-php72 && \
+    yum -y install \
+        php72-php \
+        php72-php-common \
+        php72-php-devel \
+        php72-php-mysqlnd \
+	php72-php-mbstring \
+	php72-php-soap \
+	php72-php-gd \
+        php72-php-ldap \
+        php72-php-pear \
+        php72-php-pdo \
+	php72-php-intl \
+	php72-php-xml \
+        php72-php-oci8 \
+        php72-php-sqlsrv \
+        php72-php-pear \
+        libaio && \
+    sed -i 's/;error_log = syslog/error_log = \/dev\/stderr/' /etc/opt/remi/php72/php.ini && \
+    ln -sf /dev/stdout /var/log/httpd/access_log && \
+    ln -sf /dev/stderr /var/log/httpd/error_log && \
+    ln -sf /usr/bin/php72-pear /usr/bin/pear && \
+    ln -sf /opt/remi/php72/root/usr/share/php /usr/share/php && \
+    ln -sf /var/opt/remi/php72/lib/php /var/lib/php && \
+    yum clean all && \
+    rm -rf /var/cache/yum && \
+    rm -f /etc/httpd/conf.d/{userdir.conf,welcome.conf}
 
-# Set up the Oracle environment variables
-ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib/
-ENV ORACLE_HOME /usr/lib/oracle/12.1/client64/lib/
+RUN yum -y install git
+RUN sed -i 's/Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf
+RUN sed -i 's/Options Indexes FollowSymLinks/Options FollowSymLinks/' /etc/httpd/conf/httpd.conf
 
-# Install the OCI8 PHP extension
-RUN echo 'instantclient,/usr/lib/oracle/12.1/client64/lib' | pecl install -f oci8-2.0.8
-RUN echo "extension=oci8.so" > /etc/php5/apache2/conf.d/30-oci8.ini
+ADD entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
 
-# Enable Apache2 modules
-RUN a2enmod rewrite
 
-# Start syslog
-RUN rsyslogd
-
-# Source installation
 ARG GIT_SOURCE_REPO
+ARG ENVIRONMENT
 
+# -----------------------------------------------------------------------------
+# Set ports and env variable HOME
+# -----------------------------------------------------------------------------
+EXPOSE 8080
+ENV HOME /var/www
 
-# Set up the Apache2 environment variables
-ENV APACHE_RUN_USER www-data
-ENV APACHE_RUN_GROUP www-data
-ENV APACHE_LOG_DIR /var/log/apache2
-ENV APACHE_LOCK_DIR /var/lock/apache2
-ENV APACHE_PID_FILE /var/run/apache2.pid
+# -----------------------------------------------------------------------------
+# Start
+# -----------------------------------------------------------------------------
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
 
-EXPOSE 80
-
-#Update Source
-ENTRYPOINT cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || git clone $GIT_SOURCE_REPO
-
-# Run Apache2 in Foreground
-CMD /usr/sbin/apache2 -D FOREGROUND
+#CMD ["/usr/sbin/httpd", "-DFOREGROUND"]

@@ -1,32 +1,16 @@
-# docker-apache-php-oracle-ldap
+# Supported tags and respective `Dockerfile` links
 
-#Description
-TBD
+-   [`latest`] Centos 7 + Apache 2.4 + PHP 7.2
+-   [`php72_remi`] Centos 7 + Apache 2.4 + PHP 7.2
+-   [`php56_webtatic`] Centos 7 + Apache 2.4 + PHP 5.6
 
-##First setup
-TBD
+# Info
+Release based on official [centos] (https://hub.docker.com/_/centos/) images with addition of:
 
-
-#BUILD
-
-	
-Build
-
-	docker build \
- 	--build-arg GIT_SOURCE_REPO='https://username:password@bitbucket.org/author/repo.git' \
- 	-t "metalmarco/lcpmanager:1.0" .
-
-
-#RUN LCPMANAGER
-
-Cleanup
-
-	docker stop lcpmanager && docker rm lcpmanager
-
-Run
-
-	docker run -dit --privileged \
- 	--name lcpmanager \
-	 -p 8081:80 \
-	 --restart unless-stopped \
-	 metalmarco/lcpmanager:1.0
+- Apache
+- PHP
+- PDO
+- OCI8
+- SQLSRV
+- MySQL
+- GD
