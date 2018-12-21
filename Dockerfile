@@ -87,4 +87,4 @@ ENV HOME /var/www
 # -----------------------------------------------------------------------------
 ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
 
-#CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
+CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
