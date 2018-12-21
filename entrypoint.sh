@@ -12,7 +12,7 @@ cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || if [ -d $LOCAL_REPO/.git ]; the
 [ -z "$ENVIRONMENT" ] && ENVIRONMENT=dev
 echo "Docker environment:" $ENVIRONMENT
 
-#/usr/sbin/httpd -DFOREGROUND
+/usr/sbin/httpd -DFOREGROUND
 
 #Start Apache
 #/usr/sbin/apache2 -D FOREGROUND & tail -f /var/log/syslog
