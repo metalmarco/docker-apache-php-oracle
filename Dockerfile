@@ -73,6 +73,7 @@ RUN chmod +x /usr/bin/entrypoint.sh
 
 
 ARG GIT_SOURCE_REPO
+ARG LOCAL_REPO
 ARG ENVIRONMENT
 
 # -----------------------------------------------------------------------------

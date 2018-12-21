@@ -14,3 +14,10 @@ Release based on official [centos] (https://hub.docker.com/_/centos/) images wit
 - SQLSRV
 - MySQL
 - GD
+
+# Usage
+This docker requires 3 Environment Variables:
+
+	- GIT_SOURCE_REPO: html/php project source repo
+	- LOCAL_REPO: the name of the subfolder in the /var/www/html folder in which to clone the repo
+	- ENVIRONMENT: optional ENV variable that can be used by the PHP application
