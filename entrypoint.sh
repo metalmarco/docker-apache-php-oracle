@@ -6,6 +6,8 @@
 #Clone source
 #cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || git clone -c http.sslVerify=false $GIT_SOURCE_REPO
 mkdir /run/httpd
+chown root:httpd /run/httpd
+chmod 0710 /run/httpd
 
 cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || if [ -d $LOCAL_REPO/.git ]; then pushd $LOCAL_REPO; git pull; popd; else git clone -c http.sslVerify=false $GIT_SOURCE_REPO; fi
 
