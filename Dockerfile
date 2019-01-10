@@ -71,6 +71,10 @@ RUN sed -i 's/Options Indexes FollowSymLinks/Options FollowSymLinks/' /etc/httpd
 ADD entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 
+RUN mkdir -p /run/httpd
+RUN chown root:apache /run/httpd
+RUN chmod 0710 /run/httpd
+
 
 ARG GIT_SOURCE_REPO
 ARG LOCAL_REPO
