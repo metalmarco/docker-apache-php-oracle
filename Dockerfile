@@ -65,7 +65,7 @@ RUN yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm && \
     rm -f /etc/httpd/conf.d/{userdir.conf,welcome.conf}
 
 RUN yum -y install git
-RUN sed -i 's/Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf
+#RUN sed -i 's/Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf
 RUN sed -i 's/Options Indexes FollowSymLinks/Options FollowSymLinks/' /etc/httpd/conf/httpd.conf
 
 ADD entrypoint.sh /usr/bin/entrypoint.sh
@@ -83,7 +83,8 @@ ARG ENVIRONMENT
 # -----------------------------------------------------------------------------
 # Set ports and env variable HOME
 # -----------------------------------------------------------------------------
-EXPOSE 8080
+#EXPOSE 8080
+EXPOSE 80
 ENV HOME /var/www
 
 # -----------------------------------------------------------------------------
