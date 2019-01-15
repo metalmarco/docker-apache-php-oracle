@@ -9,7 +9,8 @@ mkdir -p /run/httpd
 chown root:apache /run/httpd
 chmod 0710 /run/httpd
 
-cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || if [ -d $LOCAL_REPO/.git ]; then pushd $LOCAL_REPO; git pull; popd; else git clone -c http.sslVerify=false $GIT_SOURCE_REPO; fi
+#cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || if [ -d $LOCAL_REPO/.git ]; then pushd $LOCAL_REPO; git pull; popd; else git clone -c http.sslVerify=false $GIT_SOURCE_REPO; fi
+cd /var/www/html && [ -z "$GIT_SOURCE_REPO" ] || if [ -d $LOCAL_REPO/.git ]; then git pull; else git clone -c http.sslVerify=false $GIT_SOURCE_REPO .; fi
 
 
 #GET/SET Environment
